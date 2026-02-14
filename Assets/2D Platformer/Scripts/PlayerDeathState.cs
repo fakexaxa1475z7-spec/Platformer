@@ -7,12 +7,14 @@ namespace Platformer
     public class PlayerDeathState : MonoBehaviour
     {
         public float jumpForce;
+        public float destroyTime = 3f;
 
         private Rigidbody2D rigidbody;
         void Start()
         {
             rigidbody = GetComponent<Rigidbody2D>();
             rigidbody.AddForce(transform.up * jumpForce, ForceMode2D.Impulse);
+            Destroy(gameObject, destroyTime);
         }
     }
 }

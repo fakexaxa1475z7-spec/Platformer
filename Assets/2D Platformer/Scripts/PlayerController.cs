@@ -36,6 +36,7 @@ namespace Platformer
 
         [HideInInspector]
         public bool deathState = false;
+        public bool winState = false;
 
         private Rigidbody2D rigidbody;
         private Animator animator;
@@ -220,6 +221,10 @@ namespace Platformer
             {
                 gameManager.coinsCounter += 1;
                 Destroy(other.gameObject);
+            }
+            if (other.gameObject.tag == "Goal")
+            {
+                winState = true;
             }
         }
     }
