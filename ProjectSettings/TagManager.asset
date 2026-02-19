@@ -25,7 +25,7 @@ TagManager:
   - 
   - 
   - EnemyWall
-  - 
+  - EnemyGround
   - 
   - 
   - 
@@ -44,6 +44,9 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Ground
+    uniqueID: 582805141
     locked: 0
   m_RenderingLayers:
   - Default
