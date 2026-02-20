@@ -38,15 +38,27 @@ namespace Platformer
         public bool deathState = false;
         public bool winState = false;
 
-        private Rigidbody2D rigidbody;
+        private Rigidbody2D rb;
         private Animator animator;
         private GameManager gameManager;
 
+        // üîä ===== SOUND =====
+        [Header("Audio")]
+        public AudioSource footstepAudio;
+        public AudioSource sfxAudio;
+
+        public AudioClip jumpClip;
+        public AudioClip deathClip;
+        public AudioClip coinClip;
+        public AudioClip winClip;
+
+        public float footstepDelay = 0.4f;
+        private float footstepTimer;
+
         void Start()
         {
-            rigidbody = GetComponent<Rigidbody2D>();
+            rb = GetComponent<Rigidbody2D>();
             playerCollider = GetComponent<Collider2D>();
-
             animator = GetComponent<Animator>();
             gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 
@@ -61,20 +73,26 @@ namespace Platformer
 
         void Update()
         {
+            if (deathState)
+            {
+                HandleAnimation();
+                return;
+            }
+
             if (isWallJumping)
             {
                 wallJumpLockCounter -= Time.deltaTime;
-
                 if (wallJumpLockCounter <= 0)
-                {
                     isWallJumping = false;
-                }
             }
+
             if (Input.GetKeyDown(KeyCode.S) && isGrounded && !isDropping)
             {
                 StartCoroutine(DropDown());
             }
+
             Move();
+            HandleFootstepSound();
             HandleWallSlide();
             HandleJump();
             HandleAnimation();
@@ -87,73 +105,83 @@ namespace Platformer
             {
                 moveInput = Input.GetAxis("Horizontal");
 
-                // ∂È“°”≈—ß‰∂≈°”·æß ÀÈ“¡¥—π‡¢È“°”·æß
                 if (isWallSliding)
                 {
-                    rigidbody.velocity = new Vector2(0, rigidbody.velocity.y);
+                    rb.velocity = new Vector2(0, rb.velocity.y);
                 }
                 else
                 {
-                    rigidbody.velocity = new Vector2(
-                        moveInput * movingSpeed,
-                        rigidbody.velocity.y
-                    );
+                    rb.velocity = new Vector2(moveInput * movingSpeed, rb.velocity.y);
                 }
             }
         }
 
-        IEnumerator DropDown()
+        // üîä FOOTSTEP
+        void HandleFootstepSound()
         {
-            isDropping = true;
-
-            Collider2D platform = Physics2D.OverlapCircle(
-                groundCheck.position,
-                0.2f,
-                LayerMask.GetMask("OneWayPlatform")
-            );
-
-            if (platform != null)
+            if (isGrounded && Mathf.Abs(moveInput) > 0.1f)
             {
-                Physics2D.IgnoreCollision(playerCollider, platform, true);
-                yield return new WaitForSeconds(dropDownDuration);
-                Physics2D.IgnoreCollision(playerCollider, platform, false);
-            }
+                footstepTimer -= Time.deltaTime;
 
-            isDropping = false;
+                if (footstepTimer <= 0)
+                {
+                    if (footstepAudio != null)
+                    {
+                        footstepAudio.pitch = Random.Range(0.9f, 1.1f);
+                        footstepAudio.Play();
+                    }
+                    footstepTimer = footstepDelay;
+                }
+            }
+            else
+            {
+                if (footstepAudio != null && footstepAudio.isPlaying)
+                {
+                    footstepAudio.Stop();
+                }
+                footstepTimer = 0;
+            }
         }
 
+        // üîä JUMP
         void HandleJump()
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 if (isGrounded)
                 {
-                    rigidbody.velocity = new Vector2(rigidbody.velocity.x, jumpForce);
+                    rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+
+                    if (jumpClip != null && sfxAudio != null)
+                    {
+                        sfxAudio.PlayOneShot(jumpClip);
+                    }
                 }
                 else if (isWallSliding)
                 {
                     float direction = facingRight ? -1 : 1;
 
-                    rigidbody.velocity = new Vector2(direction * wallJumpForceX, wallJumpForceY);
+                    rb.velocity = new Vector2(direction * wallJumpForceX, wallJumpForceY);
 
                     isWallJumping = true;
                     wallJumpLockCounter = wallJumpLockTime;
 
-                    Flip(); // À—πÀπÈ“∑—π∑’µÕπ‡¥ÈßÕÕ°
+                    Flip();
+
+                    if (jumpClip != null && sfxAudio != null)
+                    {
+                        sfxAudio.PlayOneShot(jumpClip);
+                    }
                 }
             }
         }
 
         void HandleWallSlide()
         {
-            if (isTouchingWall && !isGrounded && rigidbody.velocity.y < 0)
+            if (isTouchingWall && !isGrounded && rb.velocity.y < 0)
             {
                 isWallSliding = true;
-
-                rigidbody.velocity = new Vector2(
-                    rigidbody.velocity.x,
-                    -wallSlideSpeed
-                );
+                rb.velocity = new Vector2(rb.velocity.x, -wallSlideSpeed);
             }
             else
             {
@@ -163,20 +191,26 @@ namespace Platformer
 
         void HandleFlip()
         {
-            if (facingRight == false && moveInput > 0)
+            if (!facingRight && moveInput > 0)
                 Flip();
-            else if (facingRight == true && moveInput < 0)
+            else if (facingRight && moveInput < 0)
                 Flip();
         }
 
         void HandleAnimation()
         {
+            if (deathState)
+            {
+                animator.SetInteger("playerState", 3);
+                return;
+            }
+
             if (!isGrounded)
-                animator.SetInteger("playerState", 2); // jump
-            else if (moveInput != 0)
-                animator.SetInteger("playerState", 1); // run
+                animator.SetInteger("playerState", 2);
+            else if (Mathf.Abs(moveInput) > 0.1f)
+                animator.SetInteger("playerState", 1);
             else
-                animator.SetInteger("playerState", 0); // idle
+                animator.SetInteger("playerState", 0);
         }
 
         private void Flip()
@@ -205,18 +239,44 @@ namespace Platformer
             );
         }
 
+        IEnumerator DropDown()
+        {
+            isDropping = true;
+
+            Collider2D platform = Physics2D.OverlapCircle(
+                groundCheck.position,
+                0.2f,
+                LayerMask.GetMask("OneWayPlatform")
+            );
+
+            if (platform != null)
+            {
+                Physics2D.IgnoreCollision(playerCollider, platform, true);
+                yield return new WaitForSeconds(dropDownDuration);
+                Physics2D.IgnoreCollision(playerCollider, platform, false);
+            }
+
+            isDropping = false;
+        }
+
+        // üîä DIE (‡πÅ‡∏Å‡πâ‡∏ï‡∏£‡∏á‡∏ô‡∏µ‡πâ)
         private void OnCollisionEnter2D(Collision2D other)
         {
-            if (other.gameObject.tag == "Enemy")
+            if (other.gameObject.CompareTag("Enemy"))
             {
+                if (deathState) return;
+
                 deathState = true;
-            }
-            else
-            {
-                deathState = false;
+
+                // üîä ‡πÄ‡∏•‡πà‡∏ô‡πÄ‡∏™‡∏µ‡∏¢‡∏á‡∏ó‡∏±‡∏ô‡∏ó‡∏µ
+                if (deathClip != null)
+                {
+                    AudioSource.PlayClipAtPoint(deathClip, transform.position);
+                }
             }
         }
 
+        // üîä COIN + WIN
         private void OnTriggerEnter2D(Collider2D other)
         {
             if (other.CompareTag("Coin"))
@@ -225,17 +285,27 @@ namespace Platformer
 
                 if (coin != null)
                 {
-                    // ∫—π∑÷°«Ë“‡À√’¬≠π’È∂Ÿ°‡°Á∫·≈È«
                     PlayerPrefs.SetInt("Coin_" + coin.coinID, 1);
                 }
 
                 CoinManager.Instance.AddCoin(1);
 
+                if (coinClip != null && sfxAudio != null)
+                {
+                    sfxAudio.PlayOneShot(coinClip);
+                }
+
                 Destroy(other.gameObject);
             }
-            if (other.gameObject.tag == "Goal")
+
+            if (other.gameObject.CompareTag("Goal"))
             {
                 winState = true;
+
+                if (winClip != null && sfxAudio != null)
+                {
+                    sfxAudio.PlayOneShot(winClip);
+                }
             }
         }
     }
