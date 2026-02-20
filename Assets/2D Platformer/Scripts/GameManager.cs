@@ -24,16 +24,28 @@ namespace Platformer
         [Header("UI")]
         public TMP_Text scoreText;
 
+        [Header("Audio")] // 🔥 เพิ่มตรงนี้
+        public AudioSource bgmSource;
+        public AudioSource sfxSource;
+        public AudioClip deathSound;
+        public AudioClip winSound;
+
         private PlayerController player;
         private Vector3 currentCheckpointPosition;
 
         void Start()
         {
-
             deathUI.SetActive(false);
             winUI.SetActive(false);
 
             player = playerGameObject.GetComponent<PlayerController>();
+
+            // 🔥 เล่น BGM ตอนเริ่มเกม
+            if (bgmSource != null)
+            {
+                bgmSource.loop = true;
+                bgmSource.Play();
+            }
 
             if (PlayerPrefs.HasKey("CheckpointX"))
             {
@@ -74,6 +86,14 @@ namespace Platformer
         {
             EndGame();
 
+            // 🔥 ปิด BGM
+            if (bgmSource != null)
+                bgmSource.Stop();
+
+            // 🔥 เล่นเสียงตาย
+            if (deathSound != null)
+                sfxSource.PlayOneShot(deathSound);
+
             playerGameObject.SetActive(false);
 
             GameObject deathPlayer = Instantiate(
@@ -99,12 +119,20 @@ namespace Platformer
 
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             playerGameObject.SetActive(true);
-
         }
 
         void HandlePlayerWin()
         {
             EndGame();
+
+            // 🔥 ปิด BGM
+            if (bgmSource != null)
+                bgmSource.Stop();
+
+            // 🔥 เล่นเสียงชนะ
+            if (winSound != null)
+                sfxSource.PlayOneShot(winSound);
+
             playerGameObject.SetActive(false);
 
             finalWinText.text = coinsCounter.ToString();
