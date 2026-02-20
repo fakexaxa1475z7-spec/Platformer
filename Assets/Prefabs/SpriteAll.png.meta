@@ -1,19 +1,31 @@
 fileFormatVersion: 2
-guid: 5a5b9c68ee5c5124d96af2fc325bfd68
+guid: 8860e12eb93838c45b1d8ece2863ae94
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -3633773935699157407
-    second: 0ed33f76e7bbfa5f_0
+      213: 6777079218525937896
+    second: SpriteAll_0
   - first:
-      213: -5213310542197840053
-    second: 0ed33f76e7bbfa5f_1
+      213: 4552305198866320266
+    second: SpriteAll_1
   - first:
-      213: 7900667273897411717
-    second: 0ed33f76e7bbfa5f_2
+      213: -1727830756757543019
+    second: SpriteAll_2
   - first:
-      213: -5253164931718054594
-    second: 0ed33f76e7bbfa5f_3
+      213: 8683357435965570749
+    second: SpriteAll_3
+  - first:
+      213: -7099590832143912759
+    second: SpriteAll_4
+  - first:
+      213: -306802445321607994
+    second: SpriteAll_5
+  - first:
+      213: 6363306169516145288
+    second: SpriteAll_6
+  - first:
+      213: -8336934349153802553
+    second: SpriteAll_7
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -122,6 +134,72 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
+      name: Scrap1
+      rect:
+        serializedVersion: 2
+        x: 1225
+        y: 646
+        width: 94
+        height: 94
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a8b479f85790d2f30800000000000000
+      internalID: 4552305198866320266
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lever
+      rect:
+        serializedVersion: 2
+        x: 666
+        y: 484
+        width: 115
+        height: 115
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 597e877c4138508e0800000000000000
+      internalID: -1727830756757543019
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scrap2
+      rect:
+        serializedVersion: 2
+        x: 930
+        y: 481
+        width: 151
+        height: 134
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dbe7974e49b718870800000000000000
+      internalID: 8683357435965570749
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
       name: Platform
       rect:
         serializedVersion: 2
@@ -137,14 +215,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 16e1498abdd329dc0800000000000000
-      internalID: -3633773935699157407
+      spriteID: 9c0317fd0cf297d90800000000000000
+      internalID: -7099590832143912759
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ground
+      name: Floor
       rect:
         serializedVersion: 2
         x: 847
@@ -159,18 +237,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: b47af74eea996a7b0800000000000000
-      internalID: -5213310542197840053
+      spriteID: 6c4626e2dc40ebbf0800000000000000
+      internalID: -306802445321607994
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: InGround
+      name: Wall
       rect:
         serializedVersion: 2
         x: 1280
-        y: 209
+        y: 208
         width: 115
         height: 115
       alignment: 0
@@ -181,8 +259,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e3df76ab3520917b0800000000000000
-      internalID: -5253164931718054594
+      spriteID: 7c66fe261624d4c80800000000000000
+      internalID: -8336934349153802553
       vertices: []
       indices: 
       edges: []
@@ -191,7 +269,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: f9a9fdc4c1dc3d74881cccb1f7a287b8
+    spriteID: 491695e1b6abedf4c853fe03d03cd382
     internalID: 0
     vertices: []
     indices: 
@@ -201,10 +279,14 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      0ed33f76e7bbfa5f_2: 7900667273897411717
-      Ground: -5213310542197840053
-      InGround: -5253164931718054594
-      Platform: -3633773935699157407
+      Floor: -306802445321607994
+      Lever: -1727830756757543019
+      Platform: -7099590832143912759
+      Scrap1: 4552305198866320266
+      Scrap2: 8683357435965570749
+      SpriteAll_0: 6777079218525937896
+      SpriteAll_6: 6363306169516145288
+      Wall: -8336934349153802553
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

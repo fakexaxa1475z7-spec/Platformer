@@ -49,6 +49,8 @@ namespace Platformer
 
             animator = GetComponent<Animator>();
             gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+
+            CoinManager.Instance.LoadCoins();
         }
 
         private void FixedUpdate()
@@ -217,9 +219,18 @@ namespace Platformer
 
         private void OnTriggerEnter2D(Collider2D other)
         {
-            if (other.gameObject.tag == "Coin")
+            if (other.CompareTag("Coin"))
             {
-                gameManager.coinsCounter += 1;
+                Coin coin = other.GetComponent<Coin>();
+
+                if (coin != null)
+                {
+                    // บันทึกว่าเหรียญนี้ถูกเก็บแล้ว
+                    PlayerPrefs.SetInt("Coin_" + coin.coinID, 1);
+                }
+
+                CoinManager.Instance.AddCoin(1);
+
                 Destroy(other.gameObject);
             }
             if (other.gameObject.tag == "Goal")

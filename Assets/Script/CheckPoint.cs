@@ -23,6 +23,8 @@ namespace Platformer
                 PlayerPrefs.SetFloat("CheckpointY", pos.y);
                 PlayerPrefs.SetFloat("CheckpointZ", pos.z);
 
+                PlayerPrefs.SetInt("SavedCoins", CoinManager.Instance.coinCount);
+
                 PlayerPrefs.Save();
 
                 Debug.Log("Checkpoint Saved!");

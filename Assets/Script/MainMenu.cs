@@ -18,7 +18,13 @@ public class MainMenu : MonoBehaviour
     public void StartGame()
     {
         ClearCheckpointData();
-
+        PlayerPrefs.DeleteKey("SavedLevel");
+        PlayerPrefs.DeleteKey("CheckpointX");
+        PlayerPrefs.DeleteKey("CheckpointY");
+        PlayerPrefs.DeleteKey("CheckpointZ");
+        PlayerPrefs.DeleteKey("SavedCoins");
+        ResetAllCoins();
+        PlayerPrefs.Save();
         SceneManager.LoadScene(firstLevelName);
     }
 
@@ -37,5 +43,16 @@ public class MainMenu : MonoBehaviour
     {
         Debug.Log("Exit Game");
         Application.Quit();
+    }
+
+    public void ResetAllCoins()
+    {
+        for (int i = 1; i <= 50; i++)
+        {
+            PlayerPrefs.DeleteKey("Coin_" + i);
+        }
+
+        PlayerPrefs.Save();
+        Debug.Log("All Coins Reset");
     }
 }

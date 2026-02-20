@@ -9,19 +9,10 @@ namespace Platformer
         [Header("Score")]
         public int coinsCounter = 0;
         public int highScore;
-        public TMP_Text timerText;
         public TMP_Text finalDeathText;
         public TMP_Text deathHighScoreText;
-        public TMP_Text DeathimerText;
-        public TMP_Text deathHighTimerText;
         public TMP_Text finalWinText;
         public TMP_Text winHighScoreText;
-        public TMP_Text winHighTimerText;
-        public TMP_Text winTimerText;
-
-        [Header("Timer")]
-        private float currentTime = 0f;
-        private bool isTiming = true;
 
         [Header("References")]
         public GameObject playerGameObject;
@@ -38,9 +29,6 @@ namespace Platformer
 
         void Start()
         {
-            currentTime = 0f;
-            highScore = PlayerPrefs.GetInt("HighScore", 0);
-            float bestTime = PlayerPrefs.GetFloat("BestTime", Mathf.Infinity);
 
             deathUI.SetActive(false);
             winUI.SetActive(false);
@@ -56,11 +44,12 @@ namespace Platformer
                 Vector3 checkpointPos = new Vector3(x, y, z);
                 playerGameObject.transform.position = checkpointPos;
             }
-
+            CoinManager.Instance.LoadCoins();
         }
 
         void Update()
         {
+            coinsCounter = CoinManager.Instance.coinCount;
             scoreText.text = coinsCounter.ToString();
 
             if (player != null && player.deathState)
@@ -71,21 +60,6 @@ namespace Platformer
             {
                 HandlePlayerWin();
             }
-            if (isTiming)
-            {
-                currentTime += Time.deltaTime;
-                UpdateTimerUI();
-            }
-        }
-
-        void UpdateTimerUI()
-        {
-            int minutes = Mathf.FloorToInt(currentTime / 60);
-            int seconds = Mathf.FloorToInt(currentTime % 60);
-            int milliseconds = Mathf.FloorToInt((currentTime * 100) % 100);
-
-            timerText.text = string.Format("{0:00}:{1:00}:{2:00}",
-                minutes, seconds, milliseconds);
         }
 
         void ClearCheckpointData()
@@ -114,11 +88,6 @@ namespace Platformer
 
             finalDeathText.text = coinsCounter.ToString();
             deathHighScoreText.text = "High Score: " + highScore.ToString();
-            DeathimerText.text = "Time: " + timerText.text;
-            deathHighTimerText.text = "Best Time: " + string.Format("{0:00}:{1:00}:{2:00}",
-                Mathf.FloorToInt(PlayerPrefs.GetFloat("BestTime", Mathf.Infinity) / 60),
-                Mathf.FloorToInt(PlayerPrefs.GetFloat("BestTime", Mathf.Infinity) % 60),
-                Mathf.FloorToInt((PlayerPrefs.GetFloat("BestTime", Mathf.Infinity) * 100) % 100));
 
             mainUI.SetActive(false);
             deathUI.SetActive(true);
@@ -140,11 +109,6 @@ namespace Platformer
 
             finalWinText.text = coinsCounter.ToString();
             winHighScoreText.text = "High Score: " + highScore.ToString();
-            winTimerText.text = "Time: " + timerText.text;
-            winHighTimerText.text = "Best Time: " + string.Format("{0:00}:{1:00}:{2:00}",
-                Mathf.FloorToInt(PlayerPrefs.GetFloat("BestTime", Mathf.Infinity) / 60),
-                Mathf.FloorToInt(PlayerPrefs.GetFloat("BestTime", Mathf.Infinity) % 60),
-                Mathf.FloorToInt((PlayerPrefs.GetFloat("BestTime", Mathf.Infinity) * 100) % 100));
 
             mainUI.SetActive(false);
             winUI.SetActive(true);
@@ -152,6 +116,7 @@ namespace Platformer
 
         public void ReloadLevel()
         {
+            ResetAll();
             ClearCheckpointData();
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
@@ -164,8 +129,6 @@ namespace Platformer
         public void EndGame()
         {
             EndHighScore();
-            EndBestTime();
-            isTiming = false;
         }
 
         public void EndHighScore()
@@ -177,13 +140,22 @@ namespace Platformer
                 PlayerPrefs.Save();
             }
         }
-        public void EndBestTime()
+
+        public void ResetAll()
         {
-            if (currentTime < PlayerPrefs.GetFloat("BestTime", Mathf.Infinity))
+            for (int i = 1; i <= 50; i++)
             {
-                PlayerPrefs.SetFloat("BestTime", currentTime);
-                PlayerPrefs.Save();
+                PlayerPrefs.DeleteKey("Coin_Coin" + i);
             }
+
+            PlayerPrefs.DeleteKey("SavedLevel");
+            PlayerPrefs.DeleteKey("CheckpointX");
+            PlayerPrefs.DeleteKey("CheckpointY");
+            PlayerPrefs.DeleteKey("CheckpointZ");
+            PlayerPrefs.DeleteKey("SavedCoins");
+
+            PlayerPrefs.Save();
+            Debug.Log("All Coins Reset");
         }
     }
 }
